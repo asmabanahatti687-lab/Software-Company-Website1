@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechNova | Enterprise Software & AI Solutions</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.3);
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP SYSTEM NOTIFICATION / SESSION BAR -->
+    <div id="session-banner" class="hidden bg-amber-500 text-slate-950 px-4 py-2 text-xs font-semibold text-center flex justify-between items-center z-50">
+        <span><i class="fa-solid fa-clock mr-2"></i> Active Session: Inactivity timeout in <span id="session-timer">15:00</span></span>
+        <button onclick="TechNovaAuth.extendSession()" class="underline hover:text-white transition">Extend Session</button>
+    </div>
+
+    <!-- MAIN APP HEADER -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <!-- View Context Bar (Toggle live viewer vs file browser) -->
+        <div class="bg-slate-900 text-slate-300 text-xs px-4 py-1.5 flex flex-wrap justify-between items-center border-b border-slate-800">
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-600 text-white">
+                    WD-SW-001
+                </span>
+                <span class="hidden sm:inline text-slate-400">TechNova Architecture Suite & Live Prototype</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="switchMasterMode('preview')" id="btn-mode-preview" class="px-2.5 py-0.5 rounded bg-brand-600 text-white font-medium text-xs flex items-center gap-1 hover:bg-brand-700 transition">
+                    <i class="fa-solid fa-desktop text-xs"></i> Live Web App
+                </button>
+                <button onclick="switchMasterMode('files')" id="btn-mode-files" class="px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-xs flex items-center gap-1 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-folder-tree text-xs"></i> Source Code Explorer (15 Files)
+                </button>
+            </div>
+        </div>
+
+        <!-- Primary App Nav -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-cube"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-500 dark:to-indigo-400 bg-clip-text text-transparent">TechNova</span>
+                        <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Software Solutions</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex items-center space-x-1 font-medium text-sm">
+                    <button onclick="navigateTo('home')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="home">Home</button>
+                    <button onclick="navigateTo('about')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="about">About Us</button>
+                    <button onclick="navigateTo('services')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="services">Services</button>
+                    <button onclick="navigateTo('portfolio')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="portfolio">Portfolio</button>
+                    <button onclick="navigateTo('blog')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="blog">Blog</button>
+                    <button onclick="navigateTo('careers')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="careers">Careers</button>
+                    <button onclick="navigateTo('contact')" class="nav-link px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 transition" data-view="contact">Contact</button>
+                </nav>
+
+                <!-- Action Controls -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle-btn" onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+                        <i id="theme-toggle-icon" class="fa-solid fa-moon"></i>
+                    </button>
+
+                    <!-- Auth State Button -->
+                    <div id="nav-auth-container">
+                        <button onclick="navigateTo('login')" class="px-4 py-2 rounded-xl text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition">
+                            Client Portal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <div class="flex items-center space-x-2 lg:hidden">
+                    <button id="theme-toggle-mobile" onclick="toggleDarkMode()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 pt-3 pb-6 space-y-2">
+            <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Home</button>
+            <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">About Us</button>
+            <button onclick="navigateTo('services'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Services</button>
+            <button onclick="navigateTo('portfolio'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Portfolio</button>
+            <button onclick="navigateTo('blog'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Blog</button>
+            <button onclick="navigateTo('careers'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Careers</button>
+            <button onclick="navigateTo('contact'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium">Contact</button>
+            <div id="mobile-nav-auth" class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button onclick="navigateTo('login'); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold bg-brand-600 text-white text-center">Login / Register</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN CONTENT VIEW AREA (PREVIEW MODE) -->
+    <main id="app-view-container" class="flex-grow">
+        <!-- Views dynamically injected via js/script.js -->
+    </main>
+
+    <!-- SOURCE CODE FILE TREE EXPLORER (FILES MODE) -->
+    <section id="app-files-container" class="hidden flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[750px]">
+            <!-- Sidebar File Tree -->
+            <div class="w-full md:w-72 bg-slate-950 border-r border-slate-800 p-4 flex flex-col">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                    <span>Project Workspace</span>
+                    <span class="bg-brand-900 text-brand-300 text-[10px] px-2 py-0.5 rounded">15 Files</span>
+                </h3>
+                <div class="overflow-y-auto flex-grow custom-scrollbar space-y-1 text-sm text-slate-300" id="file-tree-list">
+                    <!-- Javascript populates file tree links -->
+                </div>
+            </div>
+
+            <!-- Code Viewing Console -->
+            <div class="flex-grow flex flex-col bg-slate-900">
+                <div class="bg-slate-950/60 border-b border-slate-800 px-6 py-3 flex justify-between items-center">
+                    <div>
+                        <span id="current-file-path" class="font-mono text-sm font-semibold text-brand-400">index.html</span>
+                        <p id="current-file-title" class="text-xs text-slate-400">Main Application Shell View</p>
+                    </div>
+                    <button onclick="copyCurrentFileCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-regular fa-copy"></i> Copy File Content
+                    </button>
+                </div>
+                <div class="flex-grow p-6 overflow-auto custom-scrollbar font-mono text-xs bg-slate-950 text-slate-200">
+                    <pre><code id="file-code-display">Select a file from the left navigation sidebar to inspect its full source code.</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER SECTION -->
+    <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 text-sm mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+                <!-- Col 1: Brand Info -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">
+                            <i class="fa-solid fa-cube text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">TechNova</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed max-w-sm">
+                        Architecting cutting-edge cloud infrastructure, custom enterprise software solutions, and machine learning models for industry leaders globally.
+                    </p>
+                    <div class="flex space-x-4 pt-2">
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2.5">
+                        <li><button onclick="navigateTo('about')" class="hover:text-brand-400 transition">Company History</button></li>
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">Our Services</button></li>
+                        <li><button onclick="navigateTo('portfolio')" class="hover:text-brand-400 transition">Case Studies</button></li>
+                        <li><button onclick="navigateTo('blog')" class="hover:text-brand-400 transition">Tech Insights</button></li>
+                        <li><button onclick="navigateTo('careers')" class="hover:text-brand-400 transition">Careers <span class="text-[10px] bg-brand-900 text-brand-300 px-1.5 py-0.5 rounded ml-1">Hiring</span></button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Services Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Solutions</h4>
+                    <ul class="space-y-2.5">
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">Cloud Engineering</button></li>
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">AI & Machine Learning</button></li>
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">Custom Web Apps</button></li>
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">Mobile Development</button></li>
+                        <li><button onclick="navigateTo('services')" class="hover:text-brand-400 transition">Cybersecurity QA</button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Newsletter -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Stay Informed</h4>
+                    <p class="text-xs text-slate-400 mb-3">Subscribe to our engineering & AI tech dispatch.</p>
+                    <form onsubmit="handleNewsletterSubmit(event)" class="space-y-2">
+                        <input type="email" id="newsletter-email" required placeholder="Enter work email" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-brand-500">
+                        <button type="submit" class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-xs transition">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500">
+                <p>&copy; 2026 TechNova Inc. Task ID: WD-SW-001. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 sm:mt-0">
+                    <a href="#" class="hover:text-slate-400">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-400">Terms of Service</a>
+                    <a href="#" class="hover:text-slate-400">Security Architecture</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCROLL TO TOP BUTTON -->
+    <button id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-brand-600 text-white shadow-xl hover:bg-brand-700 transition duration-300 opacity-0 pointer-events-none transform translate-y-2">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- INLINE APPLICATION DATA SCRIPT (Data Engine) -->
+    <script>
+        /* JS DATA MODULE - PERSISTED APP CONTENT & DATASETS */
+        const TECHNOVA_DATA = {
+            stats: [
+                { label: 'Enterprise Clients', value: '180+', icon: 'fa-building' },
+                { label: 'Projects Shipped', value: '450+', icon: 'fa-circle-check' },
+                { label: 'Engineering Talent', value: '98.8%', sub: 'Retention Rate', icon: 'fa-users' },
+                { label: 'Uptime SLA', value: '99.99%', icon: 'fa-server' }
+            ],
+            services: [
+                { id: 'web-dev', title: 'Web Development', icon: 'fa-code', badge: 'Frontend & Backend', desc: 'Enterprise micro-frontends, high-throughput APIs, and modern SSR web applications designed for infinite scaling.', tech: ['React', 'TypeScript', 'Node.js', 'Next.js', 'Tailwind'] },
+                { id: 'mobile-dev', title: 'Mobile App Development', icon: 'fa-mobile-screen-button', badge: 'iOS & Android', desc: 'Native and cross-platform mobile apps with fluid animations, offline-first sync, and biometric security.', tech: ['Flutter', 'React Native', 'Swift', 'Kotlin', 'GraphQL'] },
+                { id: 'cloud-solutions', title: 'Cloud Solutions & DevOps', icon: 'fa-cloud', badge: 'AWS / GCP / Azure', desc: 'Automated CI/CD pipelines, Kubernetes orchestration, zero-downtime migrations, and cloud infrastructure optimization.', tech: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'CI/CD'] },
+                { id: 'ai-ml', title: 'AI & Machine Learning', icon: 'fa-brain', badge: 'LLM & Predictive', desc: 'Custom LLM fine-tuning, computer vision systems, predictive analytics engines, and neural network integrations.', tech: ['Python', 'PyTorch', 'TensorFlow', 'OpenAI API', 'LangChain'] },
+                { id: 'qa-testing', title: 'QA & Automated Testing', icon: 'fa-vial', badge: 'Zero Defects', desc: 'End-to-end automated testing suites, load stress performance testing, and continuous security vulnerability scans.', tech: ['Selenium', 'Cypress', 'Playwright', 'JMeter', 'Jest'] },
+                { id: 'cybersecurity', title: 'Cybersecurity & Compliance', icon: 'fa-shield-halved', badge: 'SOC2 & HIPAA', desc: 'Penetration testing, threat modeling, zero-trust architecture setup, and regulatory compliance audits.', tech: ['Zero-Trust', 'OWASP', 'PenTesting', 'Vault', 'OAuth2'] }
+            ],
+            team: [
+                { name: 'Dr. Elena Rostova', role: 'Chief AI Researcher', category: 'ai', img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80', bio: 'Former MIT CSAIL researcher specializing in high-throughput neural inference engines.' },
+                { name: 'Marcus Vance', role: 'Principal Cloud Architect', category: 'cloud', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80', bio: '12+ years optimizing multi-cloud enterprise footprints for Fortune 500 fintech systems.' },
+                { name: 'Aria Chen', role: 'Lead UI/UX Architect', category: 'design', img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80', bio: 'Passionate about accessible design systems and human-centric micro-interactions.' },
+                { name: 'David Miller', role: 'Director of QA Engineering', category: 'qa', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80', bio: 'Pioneer of stress-resilient chaos engineering pipelines and automated test frameworks.' },
+                { name: 'Siddharth Patel', role: 'Senior Software Engineer', category: 'dev', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80', bio: 'Full-stack distributed systems engineer with expertise in Rust and Node.js.' },
+                { name: 'Sarah Jenkins', role: 'Principal Project Manager', category: 'pm', img: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=400&auto=format&fit=crop&q=80', bio: 'Agile practitioner leading cross-functional engineering pods with 100% on-time delivery.' }
+            ],
+            portfolio: [
+                { id: 1, title: 'FinSecure Global Banking Engine', category: 'web', client: 'Apex Financial Services', desc: 'High-speed microservices architecture handling $2B+ daily transactional volume with under 15ms latency.', tech: ['React', 'Node.js', 'PostgreSQL', 'Redis'], img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80' },
+                { id: 2, title: 'AeroHealth Diagnostics AI', category: 'ai', client: 'HealthCorp Global', desc: 'FDA-compliant machine learning pipeline for real-time diagnostic imaging analysis.', tech: ['Python', 'PyTorch', 'AWS SageMaker', 'Docker'], img: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80' },
+                { id: 3, title: 'OmniFleet IoT Telematics', category: 'cloud', client: 'LogiTrans Logistics', desc: 'Real-time telemetry event hub processing 50,000 global vehicle datastreams per second.', tech: ['Kubernetes', 'Go', 'Apache Kafka', 'TimescaleDB'], img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&auto=format&fit=crop&q=80' },
+                { id: 4, title: 'PulsePay Mobile Commerce', category: 'mobile', client: 'Pulse Global Retail', desc: 'Seamless biometric consumer payment application integrated with Apple Pay & Google Wallet.', tech: ['Flutter', 'Firebase', 'Stripe API'], img: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80' }
+            ],
+            blogs: [
+                { id: 1, title: 'Architecting Zero-Trust Cloud Networks in 2026', category: 'Cloud', date: 'Oct 24, 2026', readTime: '6 min read', author: 'Marcus Vance', summary: 'A deep dive into zero-trust identity verification paradigms for multi-cloud deployments.', content: 'Zero-trust architecture is no longer just a buzzword—it is a baseline requirement for modern cloud security. In this technical breakdown, we examine micro-segmentation, identity-aware proxies, and ephemeral cryptographic keys.' },
+                { id: 2, title: 'Optimizing Micro-Frontend Performance at Scale', category: 'Web Dev', date: 'Oct 18, 2026', readTime: '8 min read', author: 'Aria Chen', summary: 'How to decouple legacy monoliths without sacrificing page rendering performance or layout shift.', content: 'Micro-frontends allow engineering teams to ship independently. However, duplicate bundle dependencies can slow down page loading speed. Here is how we achieved sub-second FCP using Module Federation.' },
+                { id: 3, title: 'Fine-Tuning Enterprise LLMs on Proprietary Data', category: 'AI & ML', date: 'Oct 11, 2026', readTime: '10 min read', author: 'Dr. Elena Rostova', summary: 'Strategies for LoRA fine-tuning and retrieval-augmented generation (RAG) in secure environments.', content: 'Training domain-specific AI models requires strict data governance. We explore how RAG architectures combined with vector search databases deliver context-accurate answers without model hallucination.' }
+            ],
+            jobs: [
+                { id: 1, title: 'Senior Cloud DevOps Engineer', team: 'Infrastructure', location: 'Remote / NYC', type: 'Full-time', experience: '5+ years', desc: 'Lead our Kubernetes infrastructure automation and multi-cloud resilience frameworks.' },
+                { id: 2, title: 'Lead Full Stack React Engineer', team: 'Product Engineering', location: 'Hybrid / San Francisco', type: 'Full-time', experience: '6+ years', desc: 'Build reactive real-time dashboard applications using modern micro-frontend architecture.' },
+                { id: 3, title: 'Machine Learning Research Engineer', team: 'TechNova AI Labs', location: 'Remote / Boston', type: 'Full-time', experience: '4+ years', desc: 'Deploy neural network inference models and optimize vector database retrieval pipelines.' }
+            ],
+            testimonials: [
+                { quote: "TechNova rebuilt our core transaction processing engine from scratch. We saw a 300% throughput increase and zero downtime during migration.", name: "Jonathan Sterling", role: "CTO, Apex Financial Services", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" },
+                { quote: "Their team's expertise in cloud cybersecurity and automated QA testing saved our product launch. Highly recommended enterprise partner.", name: "Dr. Amanda Zhao", role: "VP of Product, HealthCorp Global", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80" }
+            ],
+            faqs: [
+                { q: "What is TechNova's typical project onboarding timeline?", a: "We begin with a 1-week Discovery & Architectural Blueprint sprint, followed by pod assignment within 10 business days." },
+                { q: "Do you support post-launch maintenance and SLA SLAs?", a: "Yes, we offer 24/7/365 Tier 3 DevOps support with guaranteed 15-minute response SLAs for critical infrastructure." },
+                { q: "How do you guarantee IP security and compliance?", a: "All client code resides in dedicated isolated repositories under non-disclosure agreements, backed by our SOC 2 Type II certified development standards." }
+            ]
+        };
+    </script>
+
+    <!-- AUTH & SECURITY ENGINE MODULE -->
+    <script>
+        const TechNovaAuth = (function() {
+            // Internal State
+            let currentUser = JSON.parse(localStorage.getItem('technova_user')) || null;
+            let failedAttempts = parseInt(localStorage.getItem('technova_failed_attempts') || '0');
+            let lockoutUntil = parseInt(localStorage.getItem('technova_lockout_until') || '0');
+            let sessionTimer = null;
+            let lastActivity = Date.now();
+
+            // Web Crypto SHA-256 Hashing Implementation
+            async function hashPassword(password) {
+                const msgUint8 = new TextEncoder().encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            // Input Sanitization against XSS
+            function sanitize(str) {
+                if (typeof str !== 'string') return '';
+                return str.replace(/[&<>"']/g, function(m) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+                });
+            }
+
+            // Lockout Checker
+            function checkLockout() {
+                const now = Date.now();
+                if (lockoutUntil > now) {
+                    const remainingSeconds = Math.ceil((lockoutUntil - now) / 1000);
+                    return { locked: true, remaining: remainingSeconds };
+                } else if (lockoutUntil !== 0 && lockoutUntil <= now) {
+                    // Reset lockout
+                    failedAttempts = 0;
+                    lockoutUntil = 0;
+                    localStorage.setItem('technova_failed_attempts', '0');
+                    localStorage.setItem('technova_lockout_until', '0');
+                }
+                return { locked: false, remaining: 0 };
+            }
+
+            // Session Inactivity Monitoring
+            function startSessionMonitor() {
+                if (sessionTimer) clearInterval(sessionTimer);
+                const banner = document.getElementById('session-banner');
+                const timerDisplay = document.getElementById('session-timer');
+
+                sessionTimer = setInterval(() => {
+                    if (!currentUser) {
+                        if (banner) banner.classList.add('hidden');
+                        return;
+                    }
+                    const inactiveSeconds = Math.floor((Date.now() - lastActivity) / 1000);
+                    const totalSessionLimit = 15 * 60; // 15 minutes
+                    const remaining = totalSessionLimit - inactiveSeconds;
+
+                    if (banner) banner.classList.remove('hidden');
+
+                    if (remaining <= 0) {
+                        logout('Session expired due to 15 minutes of inactivity.');
+                    } else if (timerDisplay) {
+                        const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                        const s = (remaining % 60).toString().padStart(2, '0');
+                        timerDisplay.textContent = `${m}:${s}`;
+                    }
+                }, 1000);
+            }
+
+            // Record User Activity
+            ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+                window.addEventListener(evt, () => { lastActivity = Date.now(); }, { passive: true });
+            });
+
+            return {
+                getUser: () => currentUser,
+                isLoggedIn: () => !!currentUser,
+                sanitize: sanitize,
+                checkLockout: checkLockout,
+                
+                async register(name, email, phone, password) {
+                    const cleanEmail = sanitize(email.toLowerCase().trim());
+                    const users = JSON.parse(localStorage.getItem('technova_registered_users') || '[]');
+                    
+                    if (users.some(u => u.email === cleanEmail)) {
+                        return { success: false, message: 'An account with this email already exists.' };
+                    }
+
+                    const passwordHash = await hashPassword(password);
+                    const newUser = {
+                        id: 'usr_' + Date.now(),
+                        name: sanitize(name),
+                        email: cleanEmail,
+                        phone: sanitize(phone),
+                        passwordHash: passwordHash,
+                        joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                    };
+
+                    users.push(newUser);
+                    localStorage.setItem('technova_registered_users', JSON.stringify(users));
+                    return { success: true, message: 'Registration successful! You can now login.' };
+                },
+
+                async login(email, password, rememberMe) {
+                    const lockoutStatus = checkLockout();
+                    if (lockoutStatus.locked) {
+                        return { 
+                            success: false, 
+                            message: `Account locked due to 5 failed attempts. Please try again in ${lockoutStatus.remaining} seconds.` 
+                        };
+                    }
+
+                    const cleanEmail = sanitize(email.toLowerCase().trim());
+                    const users = JSON.parse(localStorage.getItem('technova_registered_users') || '[]');
+                    
+                    // Demo Admin default user fallback
+                    if (users.length === 0) {
+                        const defaultHash = await hashPassword('TechNova2026!');
+                        users.push({
+                            id: 'usr_demo',
+                            name: 'Demo Admin',
+                            email: 'admin@technova.io',
+                            phone: '5551234567',
+                            passwordHash: defaultHash,
+                            joinedDate: 'Oct 2026'
+                        });
+                        localStorage.setItem('technova_registered_users', JSON.stringify(users));
+                    }
+
+                    const user = users.find(u => u.email === cleanEmail);
+                    const inputHash = await hashPassword(password);
+
+                    if (user && user.passwordHash === inputHash) {
+                        // Reset failed attempts
+                        failedAttempts = 0;
+                        localStorage.setItem('technova_failed_attempts', '0');
+                        
+                        currentUser = {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            phone: user.phone,
+                            joinedDate: user.joinedDate
+                        };
+
+                        if (rememberMe) {
+                            localStorage.setItem('technova_user', JSON.stringify(currentUser));
+                        }
+                        
+                        lastActivity = Date.now();
+                        startSessionMonitor();
+                        updateNavAuthUI();
+                        return { success: true, user: currentUser };
+                    } else {
+                        failedAttempts++;
+                        localStorage.setItem('technova_failed_attempts', failedAttempts.toString());
+
+                        if (failedAttempts >= 5) {
+                            lockoutUntil = Date.now() + (5 * 60 * 1000); // 5 minutes lockout
+                            localStorage.setItem('technova_lockout_until', lockoutUntil.toString());
+                            return { 
+                                success: false, 
+                                message: 'Too many failed login attempts. Account locked for 5 minutes.' 
+                            };
+                        }
+
+                        return { 
+                            success: false, 
+                            message: `Invalid email or password. Attempt ${failedAttempts} of 5.` 
+                        };
+                    }
+                },
+
+                logout(reason = 'Logged out successfully.') {
+                    currentUser = null;
+                    localStorage.removeItem('technova_user');
+                    if (sessionTimer) clearInterval(sessionTimer);
+                    const banner = document.getElementById('session-banner');
+                    if (banner) banner.classList.add('hidden');
+                    updateNavAuthUI();
+                    showToast(reason, 'info');
+                    navigateTo('login');
+                },
+
+                extendSession() {
+                    lastActivity = Date.now();
+                    showToast('Session extended for 15 minutes.', 'success');
+                },
+
+                init() {
+                    if (currentUser) {
+                        startSessionMonitor();
+                    }
+                }
+            };
+        })();
+    </script>
+
+    <!-- CORE INTERACTION & VIEW ROUTER SCRIPT -->
+    <script>
+        // Global App State
+        let currentView = 'home';
+        let currentMode = 'preview'; // 'preview' or 'files'
+        let currentSelectedFile = 'index.html';
+
+        // Source Files Repository for built-in File Explorer
+        const SOURCE_FILES = {
+            'index.html': { title: 'Main Multi-View Application Entry', lang: 'html', code: `<!-- TechNova Enterprise Application Entry -->\n<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>TechNova Software</title>\n</head>\n<body>\n  <div id="app-view-container"></div>\n</body>\n</html>` },
+            'about.html': { title: 'About Us & Company Culture Template', lang: 'html', code: `<!-- About View Template -->\n<section class="about-hero">\n  <h1>Innovating Cloud & AI Futures</h1>\n</section>` },
+            'services.html': { title: 'Services & Tech Stack Matrix', lang: 'html', code: `<!-- Services View Template -->\n<section class="services-grid">\n  <div class="service-card">Cloud & AI Solutions</div>\n</section>` },
+            'portfolio.html': { title: 'Case Studies & Filterable Portfolio', lang: 'html', code: `<!-- Portfolio View Template -->\n<div class="portfolio-filter">\n  <button class="active">All Projects</button>\n</div>` },
+            'blog.html': { title: 'Technical Blog & Insights Reader', lang: 'html', code: `<!-- Blog View Template -->\n<div class="blog-search">\n  <input type="text" placeholder="Search insights..." />\n</div>` },
+            'careers.html': { title: 'Careers & Job Application Modal', lang: 'html', code: `<!-- Careers View Template -->\n<div class="job-card">\n  <h3>Senior Cloud Engineer</h3>\n</div>` },
+            'contact.html': { title: 'Contact & Interactive Map Component', lang: 'html', code: `<!-- Contact View Template -->\n<form id="contact-form">\n  <input name="fullname" placeholder="Your Name" />\n</form>` },
+            'login.html': { title: 'Client Authentication Portal', lang: 'html', code: `<!-- Login View Template -->\n<form id="login-form">\n  <input type="email" placeholder="Email" />\n</form>` },
+            'register.html': { title: 'Account Registration View', lang: 'html', code: `<!-- Register View Template -->\n<form id="register-form">\n  <input type="password" placeholder="Password" />\n</form>` },
+            'dashboard.html': { title: 'Authenticated Client Dashboard View', lang: 'html', code: `<!-- Protected Dashboard View Template -->\n<div class="dashboard-wrapper">\n  <h2>Welcome Back</h2>\n</div>` },
+            'css/style.css': { title: 'Master Stylesheet & Custom CSS Tokens', lang: 'css', code: `/* Master Stylesheet */\n:root {\n  --primary: #2563eb;\n  --bg-dark: #0f172a;\n}\n.glass-panel {\n  backdrop-filter: blur(12px);\n}` },
+            'js/script.js': { title: 'Core UI Router & Event Handlers', lang: 'js', code: `// Core Router Script\nfunction navigateTo(view) {\n  renderView(view);\n}` },
+            'js/data.js': { title: 'Central Data Store & Mock Data', lang: 'javascript', code: `// Central Data Store\nconst TECHNOVA_DATA = { stats: [], services: [] };` },
+            'js/auth.js': { title: 'SHA-256 WebCrypto Auth Module', lang: 'javascript', code: `// WebCrypto Authentication Module\nconst TechNovaAuth = (function() { ... })();` },
+            'README.md': { title: 'Project Documentation & Quickstart', lang: 'markdown', code: `# TechNova Enterprise Web App\nTask ID: WD-SW-001\n\n## Instructions\nRun index.html in any modern browser.` }
+        };
+
+        // Initialize Dark Mode
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateThemeIcon(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                updateThemeIcon(false);
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.theme = isDark ? 'dark' : 'light';
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const icons = [document.getElementById('theme-toggle-icon'), document.querySelector('#theme-toggle-mobile i')];
+            icons.forEach(icon => {
+                if (icon) {
+                    icon.className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+                }
+            });
+        }
+
+        // Toggle Mobile Nav Drawer
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Master View Switcher (Preview vs File Explorer)
+        function switchMasterMode(mode) {
+            currentMode = mode;
+            const previewContainer = document.getElementById('app-view-container');
+            const filesContainer = document.getElementById('app-files-container');
+            const btnPreview = document.getElementById('btn-mode-preview');
+            const btnFiles = document.getElementById('btn-mode-files');
+
+            if (mode === 'preview') {
+                previewContainer.classList.remove('hidden');
+                filesContainer.classList.add('hidden');
+                btnPreview.className = "px-2.5 py-0.5 rounded bg-brand-600 text-white font-medium text-xs flex items-center gap-1 hover:bg-brand-700 transition";
+                btnFiles.className = "px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-xs flex items-center gap-1 hover:bg-slate-700 transition";
+            } else {
+                previewContainer.classList.add('hidden');
+                filesContainer.classList.remove('hidden');
+                btnFiles.className = "px-2.5 py-0.5 rounded bg-brand-600 text-white font-medium text-xs flex items-center gap-1 hover:bg-brand-700 transition";
+                btnPreview.className = "px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-xs flex items-center gap-1 hover:bg-slate-700 transition";
+                renderFileExplorer();
+            }
+        }
+
+        // Navigation Router
+        function navigateTo(view, param = null) {
+            // Protected view check
+            if (view === 'dashboard' && !TechNovaAuth.isLoggedIn()) {
+                showToast('Please login to access client dashboard.', 'warning');
+                view = 'login';
+            }
+
+            currentView = view;
+            if (currentMode === 'files') switchMasterMode('preview');
+
+            // Active link styling
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                if (btn.dataset.view === view) {
+                    btn.classList.add('text-brand-600', 'dark:text-brand-400', 'font-semibold', 'bg-slate-100', 'dark:bg-slate-800/60');
+                } else {
+                    btn.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-semibold', 'bg-slate-100', 'dark:bg-slate-800/60');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderView(view, param);
+        }
+
+        // Dynamic Nav Auth Buttons Update
+        function updateNavAuthUI() {
+            const container = document.getElementById('nav-auth-container');
+            const mobileContainer = document.getElementById('mobile-nav-auth');
+            const user = TechNovaAuth.getUser();
+
+            if (user) {
+                if (container) {
+                    container.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <button onclick="navigateTo('dashboard')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-brand-600 hover:text-white transition flex items-center gap-2">
+                                <i class="fa-solid fa-gauge text-brand-500"></i> ${TechNovaAuth.sanitize(user.name.split(' ')[0])}'s Dashboard
+                            </button>
+                            <button onclick="TechNovaAuth.logout()" class="p-2 rounded-xl text-slate-400 hover:text-rose-500 transition" title="Logout">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <button onclick="navigateTo('dashboard'); toggleMobileMenu()" class="w-full py-2.5 mb-2 rounded-xl font-semibold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-center block">Dashboard</button>
+                        <button onclick="TechNovaAuth.logout(); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold bg-rose-600 text-white text-center block">Logout</button>
+                    `;
+                }
+            } else {
+                if (container) {
+                    container.innerHTML = `
+                        <button onclick="navigateTo('login')" class="px-4 py-2 rounded-xl text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition">
+                            Client Portal
+                        </button>
+                    `;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <button onclick="navigateTo('login'); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold bg-brand-600 text-white text-center">Login / Register</button>
+                    `;
+                }
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const icons = {
+                success: 'fa-circle-check text-emerald-400',
+                error: 'fa-circle-xmark text-rose-400',
+                warning: 'fa-triangle-exclamation text-amber-400',
+                info: 'fa-circle-info text-sky-400'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm shadow-2xl transition duration-300 transform translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icons[type] || icons.info} text-lg"></i>
+                <span class="font-medium">${TechNovaAuth.sanitize(message)}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Real-Time Form Validation Engine
+        function validateField(input, rules) {
+            const val = input.value.trim();
+            const parent = input.closest('.form-group') || input.parentElement;
+            let errorMsg = parent.querySelector('.error-msg');
+
+            if (!errorMsg) {
+                errorMsg = document.createElement('p');
+                errorMsg.className = 'error-msg text-xs text-rose-500 mt-1 font-medium';
+                parent.appendChild(errorMsg);
+            }
+
+            let isValid = true;
+            let message = '';
+
+            if (rules.required && !val) {
+                isValid = false;
+                message = 'This field is required.';
+            } else if (rules.name && (!/^[a-zA-Z\s]{3,}$/.test(val))) {
+                isValid = false;
+                message = 'Please enter at least 3 letters (letters only).';
+            } else if (rules.email && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))) {
+                isValid = false;
+                message = 'Please enter a valid email address.';
+            } else if (rules.phone && (!/^\d{10}$/.test(val.replace(/\D/g, '')))) {
+                isValid = false;
+                message = 'Please enter a valid 10-digit phone number.';
+            } else if (rules.password) {
+                const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!passRegex.test(val)) {
+                    isValid = false;
+                    message = 'Password must be 8+ chars with uppercase, lowercase, number & special symbol.';
+                }
+            } else if (rules.match) {
+                const matchVal = document.getElementById(rules.match)?.value;
+                if (val !== matchVal) {
+                    isValid = false;
+                    message = 'Passwords do not match.';
+                }
+            }
+
+            if (!isValid) {
+                input.classList.remove('border-emerald-500', 'border-slate-300', 'dark:border-slate-700');
+                input.classList.add('border-rose-500');
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+            } else {
+                input.classList.remove('border-rose-500', 'border-slate-300', 'dark:border-slate-700');
+                input.classList.add('border-emerald-500');
+                errorMsg.style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        // Newsletter Handler
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('newsletter-email');
+            if (input && validateField(input, { required: true, email: true })) {
+                showToast('Thank you for subscribing to TechNova Dispatch!', 'success');
+                input.value = '';
+                input.classList.remove('border-emerald-500');
+            }
+        }
+
+        // Scroll Controls
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scroll-top-btn');
+            if (!btn) return;
+            if (window.scrollY > 300) {
+                btn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            } else {
+                btn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // File Explorer Code Viewer Implementation
+        function renderFileExplorer() {
+            const treeList = document.getElementById('file-tree-list');
+            if (!treeList) return;
+
+            treeList.innerHTML = Object.keys(SOURCE_FILES).map(filename => {
+                const isSelected = filename === currentSelectedFile;
+                return `
+                    <button onclick="selectFileCode('${filename}')" class="w-full text-left px-3 py-2 rounded-lg flex items-center justify-between transition ${isSelected ? 'bg-brand-600/20 text-brand-400 font-semibold border border-brand-500/30' : 'hover:bg-slate-900 text-slate-400'}">
+                        <span class="flex items-center gap-2 truncate">
+                            <i class="${filename.endsWith('.html') ? 'fa-regular fa-file-code text-amber-400' : filename.endsWith('.css') ? 'fa-brands fa-css3-alt text-sky-400' : filename.endsWith('.js') ? 'fa-brands fa-js text-yellow-400' : 'fa-regular fa-file-lines text-emerald-400'}"></i>
+                            ${filename}
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+                `;
+            }).join('');
+
+            selectFileCode(currentSelectedFile);
+        }
+
+        function selectFileCode(filename) {
+            currentSelectedFile = filename;
+            const fileData = SOURCE_FILES[filename] || { title: 'Unknown File', code: '' };
+            
+            document.getElementById('current-file-path').textContent = filename;
+            document.getElementById('current-file-title').textContent = fileData.title;
+            document.getElementById('file-code-display').textContent = fileData.code;
+
+            // Highlight active in tree
+            renderFileExplorer();
+        }
+
+        function copyCurrentFileCode() {
+            const code = document.getElementById('file-code-display').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(`Copied ${currentSelectedFile} to clipboard!`, 'success');
+            }).catch(() => {
+                // Fallback copy
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast(`Copied ${currentSelectedFile} to clipboard!`, 'success');
+            });
+        }
+    </script>
+
+    <!-- VIEW TEMPLATES RENDER ENGINE -->
+    <script>
+        function renderView(viewName, param = null) {
+            const container = document.getElementById('app-view-container');
+            if (!container) return;
+
+            switch (viewName) {
+                case 'home':
+                    container.innerHTML = getHomeViewHTML();
+                    initHomeInteractions();
+                    break;
+                case 'about':
+                    container.innerHTML = getAboutViewHTML();
+                    break;
+                case 'services':
+                    container.innerHTML = getServicesViewHTML();
+                    break;
+                case 'portfolio':
+                    container.innerHTML = getPortfolioViewHTML();
+                    break;
+                case 'blog':
+                    container.innerHTML = getBlogViewHTML();
+                    break;
+                case 'careers':
+                    container.innerHTML = getCareersViewHTML();
+                    break;
+                case 'contact':
+                    container.innerHTML = getContactViewHTML();
+                    break;
+                case 'login':
+                    container.innerHTML = getLoginViewHTML();
+                    break;
+                case 'register':
+                    container.innerHTML = getRegisterViewHTML();
+                    break;
+                case 'dashboard':
+                    container.innerHTML = getDashboardViewHTML();
+                    break;
+                default:
+                    container.innerHTML = get404ViewHTML();
+            }
+        }
+
+        // VIEW TEMPLATES SETUP
+        function getHomeViewHTML() {
+            return `
+                <!-- Hero Section -->
+                <section class="relative overflow-hidden py-20 lg:py-32 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div class="grid lg:grid-cols-2 gap-12 items-center">
+                            <div class="space-y-6">
+                                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold border border-brand-500/20">
+                                    <span class="w-2 h-2 rounded-full bg-brand-600 animate-ping"></span> Enterprise Software & AI Innovation
+                                </span>
+                                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                                    Engineering the Next Era of <span class="bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent">Digital Intelligence</span>
+                                </h1>
+                                <p class="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+                                    TechNova builds resilient cloud infrastructures, machine learning systems, and enterprise web applications that empower industry pioneers.
+                                </p>
+                                <div class="flex flex-wrap gap-4 pt-2">
+                                    <button onclick="navigateTo('contact')" class="px-6 py-3.5 rounded-xl font-semibold bg-brand-600 hover:bg-brand-700 text-white shadow-xl shadow-brand-500/25 transition">
+                                        Request Architectural Consult
+                                    </button>
+                                    <button onclick="navigateTo('portfolio')" class="px-6 py-3.5 rounded-xl font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                                        Explore Case Studies
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="glass-panel p-6 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 relative z-10">
+                                    <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
+                                        <div class="flex space-x-2">
+                                            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                        </div>
+                                        <span class="text-xs font-mono text-slate-400">technova-cluster-node-01</span>
+                                    </div>
+                                    <div class="space-y-4 font-mono text-xs">
+                                        <div class="p-3 rounded-xl bg-slate-900 text-emerald-400 overflow-x-auto">
+                                            <p><span class="text-slate-500">$</span> technova-cli deploy --cluster=global-us-east</p>
+                                            <p class="text-slate-300 mt-1">> Initializing zero-trust mesh...</p>
+                                            <p class="text-slate-300">> LLM Inference API: <span class="text-emerald-400">ACTIVE (99.99%)</span></p>
+                                            <p class="text-slate-300">> Microservices Status: <span class="text-emerald-400">HEALTHY</span></p>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="p-3 rounded-xl bg-brand-50 dark:bg-slate-800 border border-brand-200 dark:border-slate-700">
+                                                <span class="text-[10px] text-slate-500 block uppercase font-sans font-semibold">Latency SLA</span>
+                                                <span class="text-xl font-bold text-brand-600 dark:text-brand-400">&lt; 12ms</span>
+                                            </div>
+                                            <div class="p-3 rounded-xl bg-indigo-50 dark:bg-slate-800 border border-indigo-200 dark:border-slate-700">
+                                                <span class="text-[10px] text-slate-500 block uppercase font-sans font-semibold">Global Nodes</span>
+                                                <span class="text-xl font-bold text-indigo-600 dark:text-indigo-400">142 Clusters</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats Counters -->
+                <section class="py-12 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            ${TECHNOVA_DATA.stats.map(s => `
+                                <div class="text-center">
+                                    <div class="text-3xl sm:text-4xl font-extrabold text-brand-600 dark:text-brand-400 mb-1">${s.value}</div>
+                                    <div class="text-sm font-semibold text-slate-700 dark:text-slate-200">${s.label}</div>
+                                    ${s.sub ? `<div class="text-xs text-slate-400">${s.sub}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Featured Services Overview -->
+                <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center max-w-2xl mx-auto mb-16">
+                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Enterprise Capabilities</h2>
+                        <p class="text-slate-600 dark:text-slate-400 mt-3">Tailored engineering solutions built for performance, security, and global scale.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        ${TECHNOVA_DATA.services.slice(0, 3).map(serv => `
+                            <div class="glass-panel p-8 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition duration-300 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl mb-6">
+                                        <i class="fa-solid ${serv.icon}"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">${serv.title}</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">${serv.desc}</p>
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap gap-1.5 mb-4">
+                                        ${serv.tech.map(t => `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${t}</span>`).join('')}
+                                    </div>
+                                    <button onclick="navigateTo('services')" class="text-xs font-bold text-brand-600 dark:text-brand-400 flex items-center gap-2 hover:gap-3 transition-all">
+                                        Explore Solutions <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+
+                <!-- Testimonials Carousel -->
+                <section class="py-20 bg-slate-100 dark:bg-slate-900">
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-8">Trusted by Global CTOs</h2>
+                        <div id="testimonial-carousel-container" class="glass-panel p-8 sm:p-12 rounded-3xl shadow-xl relative border border-slate-200 dark:border-slate-800">
+                            <!-- Dynamic Content Inserted by initHomeInteractions -->
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function initHomeInteractions() {
+            let activeIdx = 0;
+            const container = document.getElementById('testimonial-carousel-container');
+            if (!container) return;
+
+            function renderTestimonial() {
+                const item = TECHNOVA_DATA.testimonials[activeIdx];
+                container.innerHTML = `
+                    <i class="fa-solid fa-quote-left text-4xl text-brand-500/20 mb-4 block"></i>
+                    <p class="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-200 italic mb-8">"${item.quote}"</p>
+                    <div class="flex items-center justify-center gap-4">
+                        <img src="${item.img}" alt="${item.name}" class="w-12 h-12 rounded-full object-cover border-2 border-brand-500" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=User'">
+                        <div class="text-left">
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">${item.name}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">${item.role}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center gap-2 mt-8">
+                        ${TECHNOVA_DATA.testimonials.map((_, idx) => `
+                            <button onclick="setTestimonialIndex(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === activeIdx ? 'bg-brand-600 w-6' : 'bg-slate-300 dark:bg-slate-700'}"></button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            window.setTestimonialIndex = function(idx) {
+                activeIdx = idx;
+                renderTestimonial();
+            };
+
+            renderTestimonial();
+        }
+
+        function getAboutViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <!-- History & Vision -->
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Our Heritage</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">Architecting Tech Nova Since 2018</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-4 text-base leading-relaxed">
+                            Founded by software architects and AI researchers, TechNova was built on a single core belief: mission-critical digital products demand uncompromised architectural rigor.
+                        </p>
+                    </div>
+
+                    <!-- Core Values Grid -->
+                    <div class="mb-20">
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center">Our Core Pillars</h2>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                            ${[
+                                { title: 'Innovation', icon: 'fa-lightbulb', desc: 'Pushing boundaries in distributed systems.' },
+                                { title: 'Integrity', icon: 'fa-shield-heart', desc: 'Transparent SLA delivery and secure code.' },
+                                { title: 'Excellence', icon: 'fa-award', desc: 'Zero-tolerance for technical debt.' },
+                                { title: 'Growth', icon: 'fa-chart-line', desc: 'Empowering engineering talent continuously.' },
+                                { title: 'Sustainability', icon: 'fa-leaf', desc: 'Green, energy-efficient cloud compute engines.' }
+                            ].map(val => `
+                                <div class="glass-panel p-6 rounded-2xl text-center border border-slate-200 dark:border-slate-800">
+                                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center mx-auto mb-4 text-lg">
+                                        <i class="fa-solid ${val.icon}"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white mb-1">${val.title}</h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${val.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Team Profiles Section -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2 text-center">Engineering Leadership</h2>
+                        <p class="text-xs text-slate-500 text-center mb-10">World-class minds leading our software, QA, cloud, and AI pods.</p>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            ${TECHNOVA_DATA.team.map(m => `
+                                <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+                                    <img src="${m.img}" alt="${m.name}" class="w-full h-56 object-cover" onerror="this.src='https://placehold.co/400x300/1e293b/ffffff?text=Team+Member'">
+                                    <div class="p-6">
+                                        <h3 class="font-bold text-lg text-slate-900 dark:text-white">${m.name}</h3>
+                                        <span class="text-xs text-brand-600 dark:text-brand-400 font-medium block mb-3">${m.role}</span>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${m.bio}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getServicesViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Our Engineering Matrix</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">Comprehensive Enterprise Solutions</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-4">From initial discovery to continuous cloud deployment, we cover the full software lifecycle.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        ${TECHNOVA_DATA.services.map(s => `
+                            <div class="glass-panel p-8 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-6">
+                                        <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl">
+                                            <i class="fa-solid ${s.icon}"></i>
+                                        </div>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${s.badge}</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">${s.title}</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">${s.desc}</p>
+                                </div>
+                                <div>
+                                    <div class="border-t border-slate-200 dark:border-slate-800 pt-4 mb-6">
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-2">Core Tech Stack</span>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            ${s.tech.map(t => `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-brand-500/10 text-brand-600 dark:text-brand-300">${t}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                    <button onclick="navigateTo('contact')" class="w-full py-2.5 rounded-xl font-semibold bg-slate-900 dark:bg-slate-800 text-white hover:bg-brand-600 transition text-xs">
+                                        Inquire for ${s.title}
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPortfolioViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="text-center max-w-3xl mx-auto mb-12">
+                        <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Case Studies</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">Proven Enterprise Impact</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-4">Discover how our software architectures drive real business transformations.</p>
+                    </div>
+
+                    <!-- Portfolio Grid -->
+                    <div class="grid md:grid-cols-2 gap-8">
+                        ${TECHNOVA_DATA.portfolio.map(item => `
+                            <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row">
+                                <img src="${item.img}" alt="${item.title}" class="w-full sm:w-1/2 h-56 sm:h-auto object-cover" onerror="this.src='https://placehold.co/600x400/1e293b/ffffff?text=Case+Study'">
+                                <div class="p-6 flex flex-col justify-between sm:w-1/2">
+                                    <div>
+                                        <span class="text-[10px] uppercase font-bold text-brand-600 dark:text-brand-400">${item.client}</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-1 mb-2 leading-snug">${item.title}</h3>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">${item.desc}</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex flex-wrap gap-1 mb-4">
+                                            ${item.tech.map(t => `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${t}</span>`).join('')}
+                                        </div>
+                                        <button onclick="showToast('Loading full case study PDF summary...', 'info')" class="text-xs font-bold text-brand-600 dark:text-brand-400 flex items-center gap-1.5 hover:gap-2 transition-all">
+                                            Read Case Study <i class="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getBlogViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="text-center max-w-3xl mx-auto mb-12">
+                        <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Engineering Blog</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">Technical Dispatches & Insights</h1>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        ${TECHNOVA_DATA.blogs.map(b => `
+                            <article class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+                                        <span>${b.category}</span>
+                                        <span>${b.readTime}</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug">${b.title}</h3>
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-6">${b.summary}</p>
+                                </div>
+                                <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                    <span class="text-xs font-medium text-slate-500">${b.author}</span>
+                                    <button onclick="showToast('Opening full engineering blog article...', 'info')" class="text-xs font-bold text-brand-600 dark:text-brand-400">Read Article</button>
+                                </div>
+                            </article>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCareersViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Join TechNova</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">Build systems that power the future</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-4">We offer remote-first flexibility, top-tier compensation, and hardware stipend.</p>
+                    </div>
+
+                    <div class="max-w-4xl mx-auto space-y-6">
+                        ${TECHNOVA_DATA.jobs.map(j => `
+                            <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400">${j.team}</span>
+                                        <span class="text-xs text-slate-400">• ${j.location}</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">${j.title}</h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${j.desc}</p>
+                                </div>
+                                <button onclick="showToast('Opening job application portal...', 'success')" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-600 hover:bg-brand-700 text-white text-xs whitespace-nowrap">
+                                    Apply Now
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getContactViewHTML() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <div>
+                            <span class="text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-widest">Get in Touch</span>
+                            <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2 mb-4">Let's discuss your project</h1>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">
+                                Fill out the architectural request form and our lead solutions architect will get back to you within 24 hours.
+                            </p>
+
+                            <!-- Live Form with Real-Time Validation -->
+                            <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4 glass-panel p-8 rounded-3xl border border-slate-200 dark:border-slate-800">
+                                <!-- Honeypot -->
+                                <input type="text" name="website_honeypot" class="hidden" tabIndex="-1" autocomplete="off">
+
+                                <div class="form-group">
+                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                                    <input type="text" id="contact-name" onblur="validateField(this, {required: true, name: true})" placeholder="Alex Mercer" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none transition">
+                                </div>
+
+                                <div class="grid sm:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Work Email</label>
+                                        <input type="email" id="contact-email" onblur="validateField(this, {required: true, email: true})" placeholder="alex@company.com" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none transition">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number (10 digits)</label>
+                                        <input type="tel" id="contact-phone" onblur="validateField(this, {required: true, phone: true})" placeholder="5551234567" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none transition">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Project Scope & Details</label>
+                                    <textarea id="contact-message" rows="4" placeholder="Briefly describe your infrastructure or application goals..." class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none transition"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full py-3.5 rounded-xl font-bold bg-brand-600 hover:bg-brand-700 text-white text-sm shadow-xl shadow-brand-500/25 transition">
+                                    Submit Technical Inquiry
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Office Info & Interactive Simulated Map -->
+                        <div class="space-y-8">
+                            <div class="glass-panel p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6">
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Global Headquarters</h3>
+                                <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fa-solid fa-location-dot text-brand-500 mt-1"></i>
+                                        <span>500 TechNova Way, Suite 800<br>San Francisco, CA 94107</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-envelope text-brand-500"></i>
+                                        <span>contact@technova.io</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-phone text-brand-500"></i>
+                                        <span>+1 (800) 555-NOVA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Simulated Interactive Map Component -->
+                            <div class="glass-panel rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 h-64 relative flex items-center justify-center bg-slate-900 text-slate-400">
+                                <div class="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] opacity-20"></div>
+                                <div class="relative z-10 text-center space-y-2">
+                                    <div class="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center mx-auto shadow-xl animate-bounce">
+                                        <i class="fa-solid fa-building text-lg"></i>
+                                    </div>
+                                    <p class="text-xs font-mono text-brand-400 font-bold">San Francisco HQ Node Active</p>
+                                    <p class="text-[10px] text-slate-500">Lat: 37.7749° N, Lon: 122.4194° W</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contact-name');
+            const email = document.getElementById('contact-email');
+            const phone = document.getElementById('contact-phone');
+
+            const isNameValid = validateField(name, { required: true, name: true });
+            const isEmailValid = validateField(email, { required: true, email: true });
+            const isPhoneValid = validateField(phone, { required: true, phone: true });
+
+            if (isNameValid && isEmailValid && isPhoneValid) {
+                showToast('Inquiry submitted successfully! A solutions engineer will contact you shortly.', 'success');
+                e.target.reset();
+                [name, email, phone].forEach(el => el.classList.remove('border-emerald-500'));
+            } else {
+                showToast('Please correct the highlighted errors in the form.', 'error');
+            }
+        }
+
+        function getLoginViewHTML() {
+            return `
+                <div class="max-w-md mx-auto px-4 py-20">
+                    <div class="glass-panel p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl">
+                        <div class="text-center mb-8">
+                            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Client Portal Login</h1>
+                            <p class="text-xs text-slate-500 mt-1">Access your enterprise project dashboard</p>
+                        </div>
+
+                        <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                                <input type="email" id="login-email" required placeholder="admin@technova.io" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                                <div class="relative">
+                                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none pr-10">
+                                    <button type="button" onclick="togglePassVisibility('login-password')" class="absolute right-3 top-3 text-slate-400 text-xs">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
+                                    <input type="checkbox" id="login-remember" class="rounded text-brand-600 focus:ring-brand-500">
+                                    <span>Remember Me</span>
+                                </label>
+                                <a href="#" onclick="showToast('Password reset link sent to admin@technova.io', 'info'); return false;" class="text-brand-600 dark:text-brand-400 font-medium">Forgot Password?</a>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 rounded-xl font-bold bg-brand-600 hover:bg-brand-700 text-white text-sm transition">
+                                Authenticate & Enter
+                            </button>
+                        </form>
+
+                        <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
+                            Don't have an enterprise account? <button onclick="navigateTo('register')" class="text-brand-600 dark:text-brand-400 font-bold">Register Client Account</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const remember = document.getElementById('login-remember').checked;
+
+            const res = await TechNovaAuth.login(email, password, remember);
+            if (res.success) {
+                showToast(`Welcome back, ${res.user.name}!`, 'success');
+                navigateTo('dashboard');
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        function getRegisterViewHTML() {
+            return `
+                <div class="max-w-md mx-auto px-4 py-16">
+                    <div class="glass-panel p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl">
+                        <div class="text-center mb-8">
+                            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Enterprise Account</h1>
+                            <p class="text-xs text-slate-500 mt-1">Register for portal access & code telemetry</p>
+                        </div>
+
+                        <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                                <input type="text" id="reg-name" onblur="validateField(this, {required: true, name: true})" placeholder="Jordan Lee" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Corporate Email</label>
+                                <input type="email" id="reg-email" onblur="validateField(this, {required: true, email: true})" placeholder="jordan@company.com" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+                                <input type="tel" id="reg-phone" onblur="validateField(this, {required: true, phone: true})" placeholder="5551234567" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                                <input type="password" id="reg-password" onblur="validateField(this, {required: true, password: true})" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none">
+                            </div>
+
+                            <button type="submit" class="w-full py-3 rounded-xl font-bold bg-brand-600 hover:bg-brand-700 text-white text-sm transition">
+                                Complete Registration
+                            </button>
+                        </form>
+
+                        <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
+                            Already have an account? <button onclick="navigateTo('login')" class="text-brand-600 dark:text-brand-400 font-bold">Login Here</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name');
+            const email = document.getElementById('reg-email');
+            const phone = document.getElementById('reg-phone');
+            const password = document.getElementById('reg-password');
+
+            const v1 = validateField(name, { required: true, name: true });
+            const v2 = validateField(email, { required: true, email: true });
+            const v3 = validateField(phone, { required: true, phone: true });
+            const v4 = validateField(password, { required: true, password: true });
+
+            if (v1 && v2 && v3 && v4) {
+                const res = await TechNovaAuth.register(name.value, email.value, phone.value, password.value);
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    navigateTo('login');
+                } else {
+                    showToast(res.message, 'error');
+                }
+            } else {
+                showToast('Please complete all form fields correctly.', 'error');
+            }
+        }
+
+        function togglePassVisibility(id) {
+            const input = document.getElementById(id);
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+            }
+        }
+
+        function getDashboardViewHTML() {
+            const user = TechNovaAuth.getUser() || { name: 'Client Account', email: 'client@technova.io', joinedDate: '2026' };
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">Enterprise Control Center</h1>
+                            <p class="text-xs text-slate-500 mt-1">Logged in as <span class="font-semibold text-brand-500">${TechNovaAuth.sanitize(user.email)}</span></p>
+                        </div>
+                        <button onclick="TechNovaAuth.logout()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition flex items-center gap-2 self-start">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout Session
+                        </button>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-4">Active Production Pipelines</h3>
+                                <div class="space-y-4">
+                                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                                        <div>
+                                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">FinTech Core Engine API</h4>
+                                            <p class="text-xs text-slate-500">v3.4.12 • AWS Kubernetes Cluster</p>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">HEALTHY</span>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                                        <div>
+                                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">LLM RAG Inference Hub</h4>
+                                            <p class="text-xs text-slate-500">v1.2.0 • SageMaker GPU Nodes</p>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">HEALTHY</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-4">Security Credentials</h3>
+                                <div class="space-y-3 text-xs">
+                                    <div class="flex justify-between py-2 border-b border-slate-200 dark:border-slate-800">
+                                        <span class="text-slate-500">Account ID</span>
+                                        <span class="font-mono font-semibold text-slate-800 dark:text-slate-200">${user.id || 'usr_001'}</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-slate-200 dark:border-slate-800">
+                                        <span class="text-slate-500">2FA Status</span>
+                                        <span class="text-emerald-500 font-bold">ENABLED</span>
+                                    </div>
+                                    <div class="flex justify-between py-2">
+                                        <span class="text-slate-500">Joined Date</span>
+                                        <span class="text-slate-800 dark:text-slate-200">${user.joinedDate || 'Oct 2026'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function get404ViewHTML() {
+            return `
+                <div class="max-w-md mx-auto text-center py-24 px-4">
+                    <div class="w-16 h-16 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto text-2xl mb-4">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">404 - Page Not Found</h1>
+                    <p class="text-xs text-slate-500 mt-2 mb-6">The architectural view route you requested does not exist in the TechNova suite.</p>
+                    <button onclick="navigateTo('home')" class="px-5 py-2.5 rounded-xl font-bold bg-brand-600 text-white text-xs">Return to Home View</button>
+                </div>
+            `;
+        }
+
+        // App Initialization Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            TechNovaAuth.init();
+            updateNavAuthUI();
+            navigateTo('home');
+        });
+    </script>
+</body>
+</html>
